@@ -30,13 +30,29 @@ Environment variables:
 - `BAS_QWEN_ENDPOINT` (default `http://127.0.0.1:8000/v1/chat/completions`)
 - `BAS_QWEN_MODEL` (default `Qwen1.5-1.8B-Chat`)
 - `BAS_QWEN_API_KEY` (optional)
+- `BAS_QWEN_TIMEOUT_MS` (request timeout, useful for CPU inference)
 
 Example:
 ```bash
 export BAS_MODEL_BACKEND=openai
 export BAS_QWEN_ENDPOINT=http://127.0.0.1:8000/v1/chat/completions
 export BAS_QWEN_MODEL=Qwen1.5-1.8B-Chat
+export BAS_QWEN_TIMEOUT_MS=120000
 ./build/bas_demo
+```
+
+If you only have the model files locally, start the included lightweight OpenAI-compatible server:
+```bash
+python3 scripts/qwen_openai_server.py --model-path /home/sun/small/Qwen/Qwen1.5-1.8B-Chat
+```
+
+Or run one-step local validation:
+```bash
+scripts/run_qwen_demo.sh /home/sun/small/Qwen/Qwen1.5-1.8B-Chat
+```
+For CPU-only hosts, you can extend startup waiting time:
+```bash
+BAS_QWEN_STARTUP_TIMEOUT_S=900 scripts/run_qwen_demo.sh /home/sun/small/Qwen/Qwen1.5-1.8B-Chat
 ```
 
 ## Repository Layout

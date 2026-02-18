@@ -71,9 +71,10 @@ int main() {
   const bas::ModelBackend backend =
       (backend_env != nullptr && std::string(backend_env) == "openai") ? bas::ModelBackend::OpenAICompatible
                                                                         : bas::ModelBackend::Mock;
+  const int timeout_ms = (backend == bas::ModelBackend::OpenAICompatible) ? 60000 : 250;
 
   model_runtime.Configure(
-      {backend, "Qwen1.5-1.8B-Chat", 192, true, "http://127.0.0.1:8000/v1/chat/completions", "", 250});
+      {backend, "Qwen1.5-1.8B-Chat", 192, true, "http://127.0.0.1:8000/v1/chat/completions", "", timeout_ms});
 
   bas::AgentPipeline pipeline({3000, 5 * 60 * 1000}, bas::FireControlEngine{}, bas::ManeuverEngine{}, model_runtime);
 

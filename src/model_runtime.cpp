@@ -22,6 +22,18 @@ std::string ReadEnvOrDefault(const char* key, const std::string& fallback) {
   return value;
 }
 
+int ReadIntEnvOrDefault(const char* key, int fallback) {
+  const char* value = std::getenv(key);
+  if (value == nullptr || *value == '\0') {
+    return fallback;
+  }
+  try {
+    return std::stoi(value);
+  } catch (const std::exception&) {
+    return fallback;
+  }
+}
+
 std::string UnescapeJsonString(const std::string& input) {
   std::string out;
   out.reserve(input.size());
@@ -85,6 +97,7 @@ ModelResponse ModelRuntime::RankAndExplain(const ModelRequest& request) const {
   const std::string endpoint = ReadEnvOrDefault("BAS_QWEN_ENDPOINT", config_.endpoint);
   const std::string model_name = ReadEnvOrDefault("BAS_QWEN_MODEL", config_.model_name);
   const std::string api_key = config_.api_key.empty() ? ReadEnvOrDefault("BAS_QWEN_API_KEY", "") : config_.api_key;
+  const int timeout_ms = std::max(500, ReadIntEnvOrDefault("BAS_QWEN_TIMEOUT_MS", config_.timeout_ms));
 
   std::ostringstream candidate_lines;
   for (std::size_t i = 0; i < request.candidate_summaries.size(); ++i) {
@@ -118,7 +131,7 @@ ModelResponse ModelRuntime::RankAndExplain(const ModelRequest& request) const {
   }
 
   std::ostringstream command;
-  command << "curl -sS --max-time " << (config_.timeout_ms / 1000.0);
+  command << "curl -sS --max-time " << (timeout_ms / 1000.0);
   command << " -H \"Content-Type: application/json\"";
   if (!api_key.empty()) {
     command << " -H \"Authorization: Bearer " << api_key << "\"";
@@ -188,34 +201,12 @@ std::string ModelRuntime::RunCommand(const std::string& command) {
 }
 
 std::string ModelRuntime::ExtractAssistantContent(const std::string& json_text) {
-  const std::string key = "\"content\":\"";
-  const std::size_t start = json_text.find(key);
-  if (start == std::string::npos) {
+  const std::regex content_re("\"content\"\\s*:\\s*\"((?:\\\\.|[^\"\\\\])*)\"");
+  std::smatch match;
+  if (!std::regex_search(json_text, match, content_re) || match.size() < 2) {
     return {};
   }
-
-  std::string escaped;
-  escaped.reserve(json_text.size() - start);
-  bool escaping = false;
-  for (std::size_t i = start + key.size(); i < json_text.size(); ++i) {
-    const char c = json_text[i];
-    if (escaping) {
-      escaped.push_back(c);
-      escaping = false;
-      continue;
-    }
-    if (c == '\\') {
-      escaped.push_back(c);
-      escaping = true;
-      continue;
-    }
-    if (c == '"') {
-      break;
-    }
-    escaped.push_back(c);
-  }
-
-  return UnescapeJsonString(escaped);
+  return UnescapeJsonString(match[1].str());
 }
 
 std::size_t ModelRuntime::ParseSelectedIndex(const std::string& text, std::size_t max_index) {

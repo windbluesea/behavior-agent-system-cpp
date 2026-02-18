@@ -45,7 +45,11 @@ DecisionPackage AgentPipeline::Tick(const BattlefieldSnapshot& snapshot, const s
 
   const ModelRequest request{memory_context, candidates};
   const ModelResponse model_response = model_runtime_.RankAndExplain(request);
-  pkg.explanation = "selected_index=" + std::to_string(model_response.selected_index) + "; " + model_response.explanation;
+  std::string concise_explanation = model_response.explanation;
+  if (concise_explanation.size() > 360) {
+    concise_explanation = concise_explanation.substr(0, 360) + "...";
+  }
+  pkg.explanation = "selected_index=" + std::to_string(model_response.selected_index) + "; " + concise_explanation;
   pkg.from_cache = false;
 
   cache_.Put(cache_key, pkg, snapshot.timestamp_ms);
