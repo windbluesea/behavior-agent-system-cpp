@@ -11,6 +11,12 @@ void EventMemory::AddEvent(const EventRecord& event) {
   Trim(event.timestamp_ms);
 }
 
+void EventMemory::AddEvents(const std::vector<EventRecord>& events) {
+  for (const auto& event : events) {
+    AddEvent(event);
+  }
+}
+
 std::vector<EventRecord> EventMemory::QueryRecent(std::int64_t now_ms, std::int64_t window_ms) const {
   std::vector<EventRecord> out;
   for (auto it = events_.rbegin(); it != events_.rend(); ++it) {
@@ -22,11 +28,26 @@ std::vector<EventRecord> EventMemory::QueryRecent(std::int64_t now_ms, std::int6
   return out;
 }
 
+std::optional<EventRecord> EventMemory::LastEventByType(EventType type,
+                                                         std::int64_t now_ms,
+                                                         std::int64_t window_ms) const {
+  for (auto it = events_.rbegin(); it != events_.rend(); ++it) {
+    if (now_ms - it->timestamp_ms > window_ms) {
+      break;
+    }
+    if (it->type == type) {
+      return *it;
+    }
+  }
+  return std::nullopt;
+}
+
 std::string EventMemory::BuildContext(std::int64_t now_ms, std::int64_t window_ms) const {
   std::ostringstream oss;
   const auto recent = QueryRecent(now_ms, window_ms);
   for (const auto& ev : recent) {
-    oss << "[t=" << ev.timestamp_ms << "] " << ev.message << "\n";
+    oss << "[t=" << ev.timestamp_ms << "]"
+        << "[" << EventTypeToString(ev.type) << "] actor=" << ev.actor_id << " msg=" << ev.message << "\n";
   }
   return oss.str();
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <deque>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,7 +14,9 @@ class EventMemory {
   explicit EventMemory(std::int64_t retention_ms = 10 * 60 * 1000);
 
   void AddEvent(const EventRecord& event);
+  void AddEvents(const std::vector<EventRecord>& events);
   std::vector<EventRecord> QueryRecent(std::int64_t now_ms, std::int64_t window_ms) const;
+  std::optional<EventRecord> LastEventByType(EventType type, std::int64_t now_ms, std::int64_t window_ms) const;
   std::string BuildContext(std::int64_t now_ms, std::int64_t window_ms) const;
 
  private:

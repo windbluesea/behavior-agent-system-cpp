@@ -15,6 +15,7 @@ class DecisionCache {
 
   std::optional<DecisionPackage> Get(const std::string& key, std::int64_t now_ms) const;
   void Put(const std::string& key, const DecisionPackage& value, std::int64_t now_ms);
+  void Prune(std::int64_t now_ms);
 
  private:
   struct Entry {

@@ -19,4 +19,14 @@ void DecisionCache::Put(const std::string& key, const DecisionPackage& value, st
   table_[key] = Entry{now_ms, value};
 }
 
+void DecisionCache::Prune(std::int64_t now_ms) {
+  for (auto it = table_.begin(); it != table_.end();) {
+    if (now_ms - it->second.timestamp_ms > ttl_ms_) {
+      it = table_.erase(it);
+    } else {
+      ++it;
+    }
+  }
+}
+
 }  // namespace bas

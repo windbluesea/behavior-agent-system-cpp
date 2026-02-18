@@ -1,16 +1,16 @@
 # Roadmap
 
-## Phase 1 - Integration MVP
-- Connect real DIS PDU stream in `DisAdapter`.
-- Add a schema-backed scenario replay input.
-- Expand fire and maneuver rule constraints.
+## Phase A (Completed)
+- C++ modular skeleton and build/test pipeline
+- DIS-like adapter, semantics, memory, fire, maneuver, model runtime, cache
+- deterministic tests and integration smoke path
 
-## Phase 2 - Model Runtime
-- Integrate local 1.5B model backend.
-- Add INT8 quantized path and latency benchmark.
-- Implement candidate reranking and explanation calibration.
+## Phase B (In Progress)
+- replace DIS-like simplified batch with strict IEEE 1278 PDU parser
+- richer terrain and obstacle model for route planning
+- calibrated weapon tables from external configs
 
-## Phase 3 - Validation
-- Build repeatable scenario packs.
-- Measure decision quality, stability, and P95 latency.
-- Add regression tests for core tactical rules.
+## Phase C (Planned)
+- integrate local INT8 runtime benchmark and latency dashboards
+- add scenario replay packs and decision quality scoring
+- online parameter tuning and confidence calibration

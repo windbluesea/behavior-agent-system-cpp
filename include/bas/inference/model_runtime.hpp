@@ -6,10 +6,16 @@
 
 namespace bas {
 
+enum class ModelBackend { Mock, OpenAICompatible };
+
 struct ModelConfig {
-  std::string model_name = "local-1.5b";
-  std::size_t max_tokens = 128;
+  ModelBackend backend = ModelBackend::Mock;
+  std::string model_name = "Qwen1.5-1.8B-Chat";
+  std::size_t max_tokens = 192;
   bool use_int8 = true;
+  std::string endpoint = "http://127.0.0.1:8000/v1/chat/completions";
+  std::string api_key;
+  int timeout_ms = 250;
 };
 
 struct ModelRequest {
@@ -28,6 +34,11 @@ class ModelRuntime {
   ModelResponse RankAndExplain(const ModelRequest& request) const;
 
  private:
+  static std::string EscapeJson(const std::string& text);
+  static std::string RunCommand(const std::string& command);
+  static std::string ExtractAssistantContent(const std::string& json_text);
+  static std::size_t ParseSelectedIndex(const std::string& text, std::size_t max_index);
+
   ModelConfig config_;
 };
 
