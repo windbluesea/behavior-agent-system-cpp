@@ -19,6 +19,7 @@ add_library(bas_core
   src/dis_adapter.cpp
   src/situation_fusion.cpp
   src/event_memory.cpp
+  src/scenario_replay.cpp
   src/fire_control_engine.cpp
   src/maneuver_engine.cpp
   src/model_runtime.cpp
@@ -31,6 +32,9 @@ target_include_directories(bas_core
 
 add_executable(bas_demo src/main.cpp)
 target_link_libraries(bas_demo PRIVATE bas_core)
+
+add_executable(bas_replay src/replay_main.cpp)
+target_link_libraries(bas_replay PRIVATE bas_core)
 
 if(BAS_BUILD_TESTS)
   enable_testing()
@@ -51,9 +55,18 @@ if(BAS_BUILD_TESTS)
   target_link_libraries(test_pipeline PRIVATE bas_core)
   add_test(NAME test_pipeline COMMAND test_pipeline)
 
+  add_executable(test_replay_loader tests/test_replay_loader.cpp)
+  target_link_libraries(test_replay_loader PRIVATE bas_core)
+  add_test(NAME test_replay_loader COMMAND test_replay_loader)
+
+  add_executable(test_replay_pipeline tests/test_replay_pipeline.cpp)
+  target_link_libraries(test_replay_pipeline PRIVATE bas_core)
+  add_test(NAME test_replay_pipeline COMMAND test_replay_pipeline)
+
   add_executable(test_latency_smoke tests/test_latency_smoke.cpp)
   target_link_libraries(test_latency_smoke PRIVATE bas_core)
   add_test(NAME test_latency_smoke COMMAND test_latency_smoke)
 
   add_test(NAME bas_demo_smoke COMMAND bas_demo)
+  add_test(NAME bas_replay_smoke COMMAND bas_replay ../data/scenarios/demo_replay.bas)
 endif()
