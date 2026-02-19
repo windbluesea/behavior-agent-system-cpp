@@ -37,6 +37,7 @@ class ModelRuntime {
   static std::string EscapeJson(const std::string& text);
   static std::string RunCommand(const std::string& command);
   static std::string ExtractAssistantContent(const std::string& json_text);
+  static std::string ExtractExplanation(const std::string& text);
   static std::size_t ParseSelectedIndex(const std::string& text, std::size_t max_index);
 
   ModelConfig config_;

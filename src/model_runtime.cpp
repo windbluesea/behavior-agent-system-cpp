@@ -155,7 +155,7 @@ ModelResponse ModelRuntime::RankAndExplain(const ModelRequest& request) const {
   }
 
   response.selected_index = ParseSelectedIndex(content, request.candidate_summaries.size());
-  response.explanation = content;
+  response.explanation = ExtractExplanation(content);
   return response;
 }
 
@@ -209,12 +209,27 @@ std::string ModelRuntime::ExtractAssistantContent(const std::string& json_text) 
   return UnescapeJsonString(match[1].str());
 }
 
+std::string ModelRuntime::ExtractExplanation(const std::string& text) {
+  const std::regex explanation_json_re("\"explanation\"\\s*:\\s*\"((?:\\\\.|[^\"\\\\])*)\"");
+  std::smatch match;
+  if (std::regex_search(text, match, explanation_json_re) && match.size() >= 2) {
+    return UnescapeJsonString(match[1].str());
+  }
+
+  const std::regex explanation_plain_re("explanation\\s*[:=]\\s*(.+)");
+  if (std::regex_search(text, match, explanation_plain_re) && match.size() >= 2) {
+    return match[1].str();
+  }
+
+  return text;
+}
+
 std::size_t ModelRuntime::ParseSelectedIndex(const std::string& text, std::size_t max_index) {
   if (max_index == 0) {
     return 0;
   }
 
-  const std::regex re("selected_index\\s*[:=]\\s*([0-9]+)");
+  const std::regex re("\"?selected_index\"?\\s*[:=]\\s*([0-9]+)");
   std::smatch match;
   if (std::regex_search(text, match, re)) {
     try {
