@@ -26,7 +26,7 @@ def entity_pdu(ts, site, app, ent, force_id, category, x, y, z, speed, heading_d
 
     payload = entity_id + force + entity_type + alt_entity_type + velocity + location + orientation + appearance_bytes
     if len(payload) > (length - 12):
-        raise RuntimeError("entity payload too long")
+        raise RuntimeError("实体PDU负载过长")
     payload += b"\x00" * ((length - 12) - len(payload))
     return header + payload
 
@@ -67,7 +67,7 @@ def main():
     with open(args.output, "wb") as f:
         f.write(blob)
 
-    print(f"written {args.output} ({len(blob)} bytes)")
+    print(f"已生成 {args.output}（{len(blob)} 字节）")
 
 
 if __name__ == "__main__":

@@ -26,11 +26,11 @@ int main() {
   bas::ManeuverDecision decision = engine.Decide(snap, {});
 
   if (decision.actions.empty()) {
-    std::cerr << "no maneuver action\n";
+    std::cerr << "未生成机动动作\n";
     return EXIT_FAILURE;
   }
   if (decision.actions.front().action_name != "emergency_evasion") {
-    std::cerr << "expected emergency evasion\n";
+    std::cerr << "期望首个动作为紧急规避\n";
     return EXIT_FAILURE;
   }
 

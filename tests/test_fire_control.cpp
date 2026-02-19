@@ -56,11 +56,11 @@ int main() {
   bas::FireDecision decision = engine.Decide(snap, {}, memory);
 
   if (decision.assignments.empty()) {
-    std::cerr << "no fire assignments\n";
+    std::cerr << "未生成火力分配\n";
     return EXIT_FAILURE;
   }
   if (decision.threats.empty() || decision.threats.front().target_id != "H-armor") {
-    std::cerr << "threat ranking incorrect\n";
+    std::cerr << "威胁排序结果不正确\n";
     return EXIT_FAILURE;
   }
 
@@ -72,7 +72,7 @@ int main() {
     }
   }
   if (!has_focus_or_stagger) {
-    std::cerr << "coordination tactic missing\n";
+    std::cerr << "缺少协同射击战术\n";
     return EXIT_FAILURE;
   }
 

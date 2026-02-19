@@ -1,79 +1,81 @@
-# Deployment Guide
+# 部署与运行指南
 
-## 1) Build
+## 1）构建与测试
 ```bash
 cmake -S . -B build -DBAS_BUILD_TESTS=ON
 cmake --build build -j
 ctest --test-dir build --output-on-failure
 ```
 
-## 2) Run Demo (Mock Model)
+## 2）运行基础演示（Mock 后端）
 ```bash
 ./build/bas_demo
 ```
 
-## 2.1) Run Scenario Replay (Mock Model)
+## 3）运行文本回放（Mock 后端）
 ```bash
 ./build/bas_replay data/scenarios/demo_replay.bas
 ```
-Replay format reference: `docs/REPLAY_FORMAT.md`
+回放格式见：`docs/REPLAY_FORMAT.md`
 
-Replay output now includes:
-- `HitContributionRate`
-- `SurvivalRate`
-- per-shooter kill contribution
+回放输出包含：
+- 命中贡献率
+- 生存率
+- 射手毁伤贡献
 
-## 2.2) Parse Strict DIS Binary
-Generate a demo binary file:
+## 4）严格 DIS 二进制解析与回放
+先生成示例二进制：
 ```bash
 python3 scripts/generate_demo_dis_binary.py data/scenarios/demo_dis.bin
 ```
 
-Parse binary summary:
+解析统计：
 ```bash
 ./build/bas_dis_parse data/scenarios/demo_dis.bin
 ```
 
-Run replay pipeline directly on binary file:
+直接回放并评估：
 ```bash
 ./build/bas_replay data/scenarios/demo_dis.bin
 ```
-DIS parser reference: `docs/DIS_BINARY.md`
 
-## 3) Connect to Local Qwen (OpenAI-Compatible)
-Start local OpenAI-compatible model server:
+解析器说明见：`docs/DIS_BINARY.md`
+
+## 5）接入本地 Qwen（OpenAI 兼容）
+启动本地模型服务：
 ```bash
 python3 scripts/qwen_openai_server.py --model-path /home/sun/small/Qwen/Qwen1.5-1.8B-Chat
 ```
 
-Then set environment variables:
+设置环境变量：
 ```bash
 export BAS_MODEL_BACKEND="openai"
 export BAS_QWEN_ENDPOINT="http://127.0.0.1:8000/v1/chat/completions"
 export BAS_QWEN_MODEL="Qwen1.5-1.8B-Chat"
 export BAS_QWEN_TIMEOUT_MS="120000"
-# export BAS_QWEN_API_KEY="..."   # optional
+# export BAS_QWEN_API_KEY="..."   # 可选
 ```
 
-Then run:
+运行演示：
 ```bash
 ./build/bas_demo
 ```
 
-One-step shortcut:
+一键联调：
 ```bash
 scripts/run_qwen_demo.sh /home/sun/small/Qwen/Qwen1.5-1.8B-Chat
 ```
-If CPU loading is slow, increase startup wait time:
+
+若 CPU 启动较慢，可增加等待时间：
 ```bash
 BAS_QWEN_STARTUP_TIMEOUT_S=900 scripts/run_qwen_demo.sh /home/sun/small/Qwen/Qwen1.5-1.8B-Chat
 ```
 
-## 4) Recommended Runtime Settings
-- decision cache TTL: 2-5 seconds
-- memory window: 5 minutes
-- model max tokens: 128-192
-- model timeout: 200-300 ms
+## 6）推荐运行参数
+- 决策缓存 TTL：2~5 秒
+- 事件记忆窗口：5 分钟
+- 模型 `max_tokens`：128~192
+- 模型超时：200~300 毫秒（CPU 场景可更高）
 
-## 5) CI
-GitHub Actions workflow is defined in `.github/workflows/ci.yml`.
+## 7）CI 说明
+GitHub Actions 工作流位于：`.github/workflows/ci.yml`

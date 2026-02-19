@@ -40,8 +40,8 @@ DecisionPackage AgentPipeline::Tick(const BattlefieldSnapshot& snapshot, const s
 
   const std::string memory_context = memory_.BuildContext(snapshot.timestamp_ms, config_.memory_window_ms);
   const std::vector<std::string> candidates = {
-      "Candidate-A aggressive: " + pkg.fire.summary + ";" + pkg.maneuver.summary,
-      "Candidate-B conservative: prioritize cover and defer long-range fire when confidence is low"};
+      "方案A（积极）： " + pkg.fire.summary + "；" + pkg.maneuver.summary,
+      "方案B（稳健）：优先利用掩护，在置信度较低时减少远程开火"};
 
   const ModelRequest request{memory_context, candidates};
   const ModelResponse model_response = model_runtime_.RankAndExplain(request);
@@ -49,7 +49,7 @@ DecisionPackage AgentPipeline::Tick(const BattlefieldSnapshot& snapshot, const s
   if (concise_explanation.size() > 360) {
     concise_explanation = concise_explanation.substr(0, 360) + "...";
   }
-  pkg.explanation = "selected_index=" + std::to_string(model_response.selected_index) + "; " + concise_explanation;
+  pkg.explanation = "候选索引=" + std::to_string(model_response.selected_index) + "；" + concise_explanation;
   pkg.from_cache = false;
 
   cache_.Put(cache_key, pkg, snapshot.timestamp_ms);

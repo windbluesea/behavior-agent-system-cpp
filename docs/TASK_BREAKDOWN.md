@@ -1,41 +1,41 @@
-# Task Breakdown
+# 任务分解
 
-## Workstream 1: Data Ingestion
-- owner: core-platform
-- deliverables:
-  - DIS-like PDU structures and adapter
-  - event extraction for memory stream
+## 工作流 1：数据接入
+- 负责人：core-platform
+- 交付物：
+  - DIS 风格 PDU 结构与适配器
+  - 事件抽取与记忆流输入
 
-## Workstream 2: Situation & Memory
-- owner: reasoning
-- deliverables:
-  - tactical semantic tagging
-  - temporal memory query and context assembly
+## 工作流 2：态势理解与记忆
+- 负责人：reasoning
+- 交付物：
+  - 战术语义标签推断
+  - 时序记忆检索与上下文构建
 
-## Workstream 3: Fire Decision
-- owner: combat-logic
-- deliverables:
-  - target threat index model
-  - weapon-target assignment strategy
-  - focus/stagger fire coordination
+## 工作流 3：火力决策
+- 负责人：combat-logic
+- 交付物：
+  - 目标威胁指数模型
+  - 武器-目标匹配策略
+  - 集火/梯次射击协同
 
-## Workstream 4: Maneuver Decision
-- owner: mobility
-- deliverables:
-  - threat-aware path planning
-  - tactical movement selection
-  - formation mode control (disperse/assemble)
+## 工作流 4：机动决策
+- 负责人：mobility
+- 交付物：
+  - 威胁感知路径规划
+  - 战术机动动作选择
+  - 编队分散/集结模式控制
 
-## Workstream 5: Inference & Optimization
-- owner: runtime
-- deliverables:
-  - mock and OpenAI-compatible model backend
-  - cache integration and INT8 runtime flag
-  - latency smoke validation
+## 工作流 5：推理与优化
+- 负责人：runtime
+- 交付物：
+  - Mock 与 OpenAI 兼容模型后端
+  - 缓存接入与 INT8 运行模式开关
+  - 时延烟测验证
 
-## Workstream 6: Validation & Documentation
-- owner: quality
-- deliverables:
-  - unit/integration tests with CTest
-  - CI workflow
-  - architecture/deployment/API docs
+## 工作流 6：验证与文档
+- 负责人：quality
+- 交付物：
+  - CTest 单元与集成测试
+  - CI 工作流
+  - 架构/部署/API 文档

@@ -83,14 +83,14 @@ ModelResponse ModelRuntime::RankAndExplain(const ModelRequest& request) const {
   ModelResponse response;
   if (request.candidate_summaries.empty()) {
     response.selected_index = 0;
-    response.explanation = "no candidate decisions available";
+    response.explanation = "没有可用候选决策";
     return response;
   }
 
   if (config_.backend == ModelBackend::Mock) {
     response.selected_index = 0;
-    response.explanation = "mock-ranker selected candidate 0; backend=mock,int8=" +
-                           std::string(config_.use_int8 ? "true" : "false");
+    response.explanation = "模拟排序器选择候选0；后端=模拟，int8=" +
+                           std::string(config_.use_int8 ? "开启" : "关闭");
     return response;
   }
 
@@ -105,15 +105,15 @@ ModelResponse ModelRuntime::RankAndExplain(const ModelRequest& request) const {
   }
 
   const std::string prompt =
-      "Task: rank tactical decision candidates for battlefield simulation."
-      " Return strict JSON with keys selected_index and explanation."
-      " Keep explanation under 60 words.\n"
-      "Context:\n" +
-      request.context + "\nCandidates:\n" + candidate_lines.str();
+      "任务：对战场仿真候选决策进行排序。"
+      " 请严格返回JSON，包含selected_index与explanation两个字段。"
+      " explanation请控制在60字以内。\n"
+      "上下文：\n" +
+      request.context + "\n候选方案：\n" + candidate_lines.str();
 
   const std::string payload =
       "{\"model\":\"" + EscapeJson(model_name) +
-      "\",\"messages\":[{\"role\":\"system\",\"content\":\"You are a tactical decision ranker.\"},"
+      "\",\"messages\":[{\"role\":\"system\",\"content\":\"你是战术决策排序助手。\"},"
       "{\"role\":\"user\",\"content\":\"" +
       EscapeJson(prompt) + "\"}],\"temperature\":0.1,\"max_tokens\":" + std::to_string(config_.max_tokens) + "}";
 
@@ -124,7 +124,7 @@ ModelResponse ModelRuntime::RankAndExplain(const ModelRequest& request) const {
     std::ofstream ofs(temp_path, std::ios::binary);
     if (!ofs) {
       response.selected_index = 0;
-      response.explanation = "failed to create temp request file; fallback candidate 0";
+      response.explanation = "创建临时请求文件失败，回退到候选0";
       return response;
     }
     ofs << payload;
@@ -143,14 +143,14 @@ ModelResponse ModelRuntime::RankAndExplain(const ModelRequest& request) const {
 
   if (raw.empty()) {
     response.selected_index = 0;
-    response.explanation = "model call returned empty response; fallback candidate 0";
+    response.explanation = "模型调用返回空响应，回退到候选0";
     return response;
   }
 
   const std::string content = ExtractAssistantContent(raw);
   if (content.empty()) {
     response.selected_index = 0;
-    response.explanation = "model response parse failed; fallback candidate 0";
+    response.explanation = "模型响应解析失败，回退到候选0";
     return response;
   }
 

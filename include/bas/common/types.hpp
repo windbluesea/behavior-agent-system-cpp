@@ -156,43 +156,43 @@ inline Side SideFromString(const std::string& text) {
 inline const char* SideToString(Side side) {
   switch (side) {
     case Side::Friendly:
-      return "friendly";
+      return "我方";
     case Side::Hostile:
-      return "hostile";
+      return "敌方";
     default:
-      return "neutral";
+      return "中立";
   }
 }
 
 inline const char* UnitTypeToString(UnitType type) {
   switch (type) {
     case UnitType::Infantry:
-      return "infantry";
+      return "步兵";
     case UnitType::Armor:
-      return "armor";
+      return "装甲";
     case UnitType::Artillery:
-      return "artillery";
+      return "炮兵";
     case UnitType::AirDefense:
-      return "air_defense";
+      return "防空";
     case UnitType::Command:
-      return "command";
+      return "指挥";
     default:
-      return "unknown";
+      return "未知";
   }
 }
 
 inline const char* EventTypeToString(EventType type) {
   switch (type) {
     case EventType::WeaponFire:
-      return "weapon_fire";
+      return "武器开火";
     case EventType::SensorContact:
-      return "sensor_contact";
+      return "传感器接触";
     case EventType::TacticalTag:
-      return "tactical_tag";
+      return "战术标签";
     case EventType::UnitLoss:
-      return "unit_loss";
+      return "单元损失";
     default:
-      return "unknown";
+      return "未知";
   }
 }
 

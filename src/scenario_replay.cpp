@@ -15,7 +15,7 @@ std::int64_t ParseInt64(const std::string& text, const std::string& field_name, 
   try {
     return std::stoll(text);
   } catch (const std::exception&) {
-    throw std::runtime_error("Invalid int64 for " + field_name + " at line " + std::to_string(line_no));
+    throw std::runtime_error("第" + std::to_string(line_no) + "行字段[" + field_name + "]不是合法整数");
   }
 }
 
@@ -23,7 +23,7 @@ double ParseDouble(const std::string& text, const std::string& field_name, int l
   try {
     return std::stod(text);
   } catch (const std::exception&) {
-    throw std::runtime_error("Invalid double for " + field_name + " at line " + std::to_string(line_no));
+    throw std::runtime_error("第" + std::to_string(line_no) + "行字段[" + field_name + "]不是合法浮点数");
   }
 }
 
@@ -34,7 +34,7 @@ bool ParseBool(const std::string& text, const std::string& field_name, int line_
   if (text == "0" || text == "false" || text == "FALSE") {
     return false;
   }
-  throw std::runtime_error("Invalid bool for " + field_name + " at line " + std::to_string(line_no));
+  throw std::runtime_error("第" + std::to_string(line_no) + "行字段[" + field_name + "]不是合法布尔值");
 }
 
 }  // namespace
@@ -42,7 +42,7 @@ bool ParseBool(const std::string& text, const std::string& field_name, int line_
 std::vector<DisPduBatch> ScenarioReplayLoader::LoadBatches(const std::string& path) const {
   std::ifstream ifs(path);
   if (!ifs) {
-    throw std::runtime_error("Cannot open replay file: " + path);
+    throw std::runtime_error("无法打开回放文件: " + path);
   }
 
   std::unordered_map<std::int64_t, DisPduBatch> batches_by_ts;
@@ -66,7 +66,7 @@ std::vector<DisPduBatch> ScenarioReplayLoader::LoadBatches(const std::string& pa
 
     if (rec_type == "ENV") {
       if (fields.size() != 5) {
-        throw std::runtime_error("ENV format error at line " + std::to_string(line_no));
+        throw std::runtime_error("第" + std::to_string(line_no) + "行ENV记录格式错误");
       }
       const std::int64_t ts = ParseInt64(Trim(fields[1]), "timestamp", line_no);
       if (batches_by_ts.find(ts) == batches_by_ts.end()) {
@@ -82,7 +82,7 @@ std::vector<DisPduBatch> ScenarioReplayLoader::LoadBatches(const std::string& pa
 
     if (rec_type == "ENTITY") {
       if (fields.size() != 12) {
-        throw std::runtime_error("ENTITY format error at line " + std::to_string(line_no));
+        throw std::runtime_error("第" + std::to_string(line_no) + "行ENTITY记录格式错误");
       }
       const std::int64_t ts = ParseInt64(Trim(fields[1]), "timestamp", line_no);
       if (batches_by_ts.find(ts) == batches_by_ts.end()) {
@@ -108,7 +108,7 @@ std::vector<DisPduBatch> ScenarioReplayLoader::LoadBatches(const std::string& pa
 
     if (rec_type == "FIRE") {
       if (fields.size() != 8) {
-        throw std::runtime_error("FIRE format error at line " + std::to_string(line_no));
+        throw std::runtime_error("第" + std::to_string(line_no) + "行FIRE记录格式错误");
       }
       const std::int64_t ts = ParseInt64(Trim(fields[1]), "timestamp", line_no);
       if (batches_by_ts.find(ts) == batches_by_ts.end()) {
@@ -128,7 +128,7 @@ std::vector<DisPduBatch> ScenarioReplayLoader::LoadBatches(const std::string& pa
       continue;
     }
 
-    throw std::runtime_error("Unknown record type at line " + std::to_string(line_no) + ": " + rec_type);
+    throw std::runtime_error("第" + std::to_string(line_no) + "行出现未知记录类型: " + rec_type);
   }
 
   std::sort(timestamps.begin(), timestamps.end());

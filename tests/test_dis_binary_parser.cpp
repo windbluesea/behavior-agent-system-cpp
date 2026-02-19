@@ -153,28 +153,28 @@ int main() {
   const auto batches = parser.ParseBytes(bytes);
 
   if (batches.size() != 1) {
-    std::cerr << "expected one timestamp batch\n";
+    std::cerr << "期望仅解析出一个时间批次\n";
     return EXIT_FAILURE;
   }
 
   if (batches[0].entity_updates.size() != 1 || batches[0].fire_events.size() != 1) {
-    std::cerr << "unexpected entity/fire counts\n";
+    std::cerr << "实体/开火记录数量异常\n";
     return EXIT_FAILURE;
   }
 
   const auto& entity = batches[0].entity_updates[0];
   if (entity.entity_id != "1-1-1" || entity.side != bas::Side::Friendly || entity.type != bas::UnitType::Armor) {
-    std::cerr << "entity basic fields mismatch\n";
+    std::cerr << "实体基础字段不匹配\n";
     return EXIT_FAILURE;
   }
   if (!entity.alive || std::fabs(entity.speed_mps - 5.0) > 1e-6) {
-    std::cerr << "entity alive/speed mismatch\n";
+    std::cerr << "实体存活状态或速度不匹配\n";
     return EXIT_FAILURE;
   }
 
   const auto& fire = batches[0].fire_events[0];
   if (fire.shooter_id != "1-1-1" || fire.target_id != "2-2-2") {
-    std::cerr << "fire ids mismatch\n";
+    std::cerr << "开火记录实体编号不匹配\n";
     return EXIT_FAILURE;
   }
 
@@ -187,7 +187,7 @@ int main() {
     threw = true;
   }
   if (!threw) {
-    std::cerr << "expected strict parser to reject malformed bytes\n";
+    std::cerr << "严格解析器应拒绝畸形字节流\n";
     return EXIT_FAILURE;
   }
 

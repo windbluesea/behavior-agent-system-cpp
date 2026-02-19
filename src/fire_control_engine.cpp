@@ -29,7 +29,7 @@ FireDecision FireControlEngine::Decide(const BattlefieldSnapshot& snapshot,
                                        const EventMemory& memory) const {
   FireDecision out;
   if (snapshot.friendly_units.empty() || snapshot.hostile_units.empty()) {
-    out.summary = "fire_assignments=0";
+    out.summary = "火力分配数=0";
     return out;
   }
 
@@ -42,8 +42,8 @@ FireDecision FireControlEngine::Decide(const BattlefieldSnapshot& snapshot,
     const double threat_index = ThreatIndex(target, min_distance);
     threat_by_target[target.id] = threat_index;
     out.threats.push_back({target.id, threat_index,
-                           std::string("type=") + UnitTypeToString(target.type) + ",d=" +
-                               std::to_string(static_cast<int>(min_distance))});
+                           std::string("类型=") + UnitTypeToString(target.type) + "，距离=" +
+                               std::to_string(static_cast<int>(min_distance)) + "米"});
   }
 
   std::sort(out.threats.begin(), out.threats.end(), [](const ThreatEstimate& a, const ThreatEstimate& b) {
@@ -84,7 +84,7 @@ FireDecision FireControlEngine::Decide(const BattlefieldSnapshot& snapshot,
     a.weapon_name = best_weapon->name;
     a.score = best_score;
     a.expected_kill_prob = best_weapon->kill_probability;
-    a.rationale = "max expected threat reduction";
+    a.rationale = "当前配置下可获得最高威胁压制收益";
     out.assignments.push_back(a);
     ++assigned_shooters_per_target[a.target_id];
   }
@@ -100,7 +100,7 @@ FireDecision FireControlEngine::Decide(const BattlefieldSnapshot& snapshot,
       }
       assignment.target_id = priority_target;
       assignment.tactic = "focus_fire";
-      assignment.rationale = "priority target exceeded focus-fire threshold";
+      assignment.rationale = "首要目标威胁超阈值，执行集火";
       ++assigned_shooters_per_target[priority_target];
     }
   }
@@ -118,9 +118,9 @@ FireDecision FireControlEngine::Decide(const BattlefieldSnapshot& snapshot,
   }
 
   const auto recent_fire = memory.LastEventByType(EventType::WeaponFire, snapshot.timestamp_ms, 5 * 60 * 1000);
-  out.summary = "fire_assignments=" + std::to_string(out.assignments.size()) +
-                ",top_threat=" + (out.threats.empty() ? std::string("none") : out.threats.front().target_id) +
-                ",recent_fire_memory=" + (recent_fire.has_value() ? std::string("yes") : std::string("no"));
+  out.summary = "火力分配数=" + std::to_string(out.assignments.size()) +
+                "，最高威胁目标=" + (out.threats.empty() ? std::string("无") : out.threats.front().target_id) +
+                "，近期火力记忆=" + (recent_fire.has_value() ? std::string("有") : std::string("无"));
   return out;
 }
 

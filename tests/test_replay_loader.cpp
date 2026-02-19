@@ -13,22 +13,22 @@ int main() {
   const auto batches = loader.LoadBatches(replay_path);
 
   if (batches.size() != 4) {
-    std::cerr << "unexpected batch count: " << batches.size() << "\n";
+    std::cerr << "时间帧数量不符合预期: " << batches.size() << "\n";
     return EXIT_FAILURE;
   }
 
   if (batches.front().fire_events.size() != 1 || batches.front().entity_updates.size() != 0) {
-    std::cerr << "first batch should contain only fire event\n";
+    std::cerr << "首帧应仅包含开火事件\n";
     return EXIT_FAILURE;
   }
 
   if (!batches[1].env.has_value()) {
-    std::cerr << "second batch missing env\n";
+    std::cerr << "第二帧缺少环境信息\n";
     return EXIT_FAILURE;
   }
 
   if (batches[1].entity_updates.size() != 4) {
-    std::cerr << "second batch entity count mismatch\n";
+    std::cerr << "第二帧实体数量不匹配\n";
     return EXIT_FAILURE;
   }
 

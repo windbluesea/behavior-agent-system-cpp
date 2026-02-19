@@ -53,7 +53,7 @@ int main() {
     const auto t1 = std::chrono::steady_clock::now();
 
     if (result.fire.assignments.empty() || result.maneuver.actions.empty()) {
-      std::cerr << "invalid decision during latency test\n";
+      std::cerr << "时延测试期间出现无效决策\n";
       return EXIT_FAILURE;
     }
 
@@ -66,10 +66,10 @@ int main() {
   const double p95_ms = latencies_ms[std::min(p95_index, latencies_ms.size() - 1)];
 
   if (p95_ms > 100.0) {
-    std::cerr << "latency target failed, p95=" << p95_ms << "ms\n";
+    std::cerr << "时延目标未达成，P95=" << p95_ms << "毫秒\n";
     return EXIT_FAILURE;
   }
 
-  std::cout << "p95_ms=" << p95_ms << "\n";
+  std::cout << "95分位时延(毫秒)=" << p95_ms << "\n";
   return EXIT_SUCCESS;
 }

@@ -29,28 +29,28 @@ int main() {
   const bas::ReplayMetricsResult result = evaluator.Finalize();
 
   if (result.initial_friendly_count != 2 || result.final_friendly_alive != 1) {
-    std::cerr << "friendly counts mismatch\n";
+    std::cerr << "我方兵力统计不匹配\n";
     return EXIT_FAILURE;
   }
 
   if (std::fabs(result.survival_rate - 50.0) > 1e-6) {
-    std::cerr << "survival rate mismatch\n";
+    std::cerr << "生存率结果不匹配\n";
     return EXIT_FAILURE;
   }
 
   if (result.total_hostile_losses != 1 || std::fabs(result.hit_contribution_rate - 100.0) > 1e-6) {
-    std::cerr << "hostile loss or contribution mismatch\n";
+    std::cerr << "敌方损失数或命中贡献率不匹配\n";
     return EXIT_FAILURE;
   }
 
   const auto it_f1 = result.shooter_kill_contribution.find("F-1");
   const auto it_f2 = result.shooter_kill_contribution.find("F-2");
   if (it_f1 == result.shooter_kill_contribution.end() || it_f2 == result.shooter_kill_contribution.end()) {
-    std::cerr << "missing shooter credit\n";
+    std::cerr << "缺少射手贡献统计\n";
     return EXIT_FAILURE;
   }
   if (std::fabs(it_f1->second - 0.5) > 1e-6 || std::fabs(it_f2->second - 0.5) > 1e-6) {
-    std::cerr << "unexpected shooter credit distribution\n";
+    std::cerr << "射手贡献分布不符合预期\n";
     return EXIT_FAILURE;
   }
 

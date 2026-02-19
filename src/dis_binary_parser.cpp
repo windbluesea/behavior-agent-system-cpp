@@ -16,7 +16,7 @@ constexpr std::size_t kDisHeaderLength = 12;
 
 std::string BuildError(const std::string& msg, std::size_t offset) {
   std::ostringstream oss;
-  oss << msg << " at byte offset " << offset;
+  oss << msg << "，字节偏移=" << offset;
   return oss.str();
 }
 
@@ -35,7 +35,7 @@ double ClampThreat(double value) {
 std::vector<DisPduBatch> DisBinaryParser::ParseFile(const std::string& path) const {
   std::ifstream ifs(path, std::ios::binary);
   if (!ifs) {
-    throw std::runtime_error("Cannot open DIS binary file: " + path);
+    throw std::runtime_error("无法打开DIS二进制文件: " + path);
   }
 
   std::vector<std::uint8_t> bytes((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
@@ -51,15 +51,15 @@ std::vector<DisPduBatch> DisBinaryParser::ParseBytes(const std::vector<std::uint
   std::size_t offset = 0;
   while (offset < bytes.size()) {
     if (bytes.size() - offset < kDisHeaderLength) {
-      throw std::runtime_error(BuildError("Incomplete DIS header", offset));
+      throw std::runtime_error(BuildError("DIS头部不完整", offset));
     }
 
     const DisPduHeader header = ParseHeader(bytes, offset);
     if (header.length < kDisHeaderLength) {
-      throw std::runtime_error(BuildError("Invalid PDU length < 12", offset));
+      throw std::runtime_error(BuildError("PDU长度非法（小于12）", offset));
     }
     if (offset + header.length > bytes.size()) {
-      throw std::runtime_error(BuildError("PDU length exceeds file size", offset));
+      throw std::runtime_error(BuildError("PDU长度超出文件范围", offset));
     }
 
     if (header.pdu_type == 1) {
@@ -67,7 +67,7 @@ std::vector<DisPduBatch> DisBinaryParser::ParseBytes(const std::vector<std::uint
     } else if (header.pdu_type == 2) {
       by_timestamp[header.timestamp].fire_events.push_back(ParseFirePdu(bytes, offset, header.length));
     } else {
-      throw std::runtime_error(BuildError("Unsupported PDU type " + std::to_string(header.pdu_type), offset));
+      throw std::runtime_error(BuildError("不支持的PDU类型: " + std::to_string(header.pdu_type), offset));
     }
 
     offset += header.length;
@@ -97,7 +97,7 @@ DisEntityPdu DisBinaryParser::ParseEntityStatePdu(const std::vector<std::uint8_t
                                                   std::size_t offset,
                                                   std::size_t length) {
   if (length < 88) {
-    throw std::runtime_error(BuildError("Entity State PDU too short", offset));
+    throw std::runtime_error(BuildError("实体状态PDU长度不足", offset));
   }
 
   const DisPduHeader header = ParseHeader(bytes, offset);
@@ -152,7 +152,7 @@ DisEntityPdu DisBinaryParser::ParseEntityStatePdu(const std::vector<std::uint8_t
 
 DisFirePdu DisBinaryParser::ParseFirePdu(const std::vector<std::uint8_t>& bytes, std::size_t offset, std::size_t length) {
   if (length < 64) {
-    throw std::runtime_error(BuildError("Fire PDU too short", offset));
+    throw std::runtime_error(BuildError("开火PDU长度不足", offset));
   }
 
   const DisPduHeader header = ParseHeader(bytes, offset);
@@ -161,7 +161,7 @@ DisFirePdu DisBinaryParser::ParseFirePdu(const std::vector<std::uint8_t>& bytes,
   out.shooter_id = ParseEntityId(bytes, offset + 12);
   out.target_id = ParseEntityId(bytes, offset + 18);
 
-  out.weapon_name = "munition";
+  out.weapon_name = "弹药";
   out.origin.x = ReadF64BE(bytes, offset + 40);
   out.origin.y = ReadF64BE(bytes, offset + 48);
   out.origin.z = ReadF64BE(bytes, offset + 56);

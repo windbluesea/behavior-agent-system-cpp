@@ -15,7 +15,7 @@ int main() {
   bas::ScenarioReplayLoader loader;
   const auto batches = loader.LoadBatches(replay_path);
   if (batches.empty()) {
-    std::cerr << "empty replay\n";
+    std::cerr << "回放数据为空\n";
     return EXIT_FAILURE;
   }
 
@@ -43,11 +43,11 @@ int main() {
   }
 
   if (decisions < 3) {
-    std::cerr << "too few decisions: " << decisions << "\n";
+    std::cerr << "决策次数过少: " << decisions << "\n";
     return EXIT_FAILURE;
   }
   if (valid_tactical_decisions < 2) {
-    std::cerr << "too few valid tactical decisions: " << valid_tactical_decisions << "\n";
+    std::cerr << "有效战术决策次数过少: " << valid_tactical_decisions << "\n";
     return EXIT_FAILURE;
   }
 

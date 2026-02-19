@@ -28,7 +28,7 @@ for _ in $(seq 1 "${STARTUP_TIMEOUT_S}"); do
 done
 
 if ! curl -fsS "http://127.0.0.1:${PORT}/health" >/dev/null; then
-  echo "Qwen server did not become ready. See /tmp/bas_qwen_server.log" >&2
+  echo "Qwen 服务未在超时时间内就绪，请查看 /tmp/bas_qwen_server.log" >&2
   exit 1
 fi
 

@@ -1,46 +1,45 @@
-# Architecture
+# 系统架构
 
-## System Positioning
-The project targets real-time intelligent decisions in simulation with a lightweight 1.5B-scale model.
-The architecture is intentionally hybrid:
-1. deterministic hard constraints (weapon range, ammo, safety, geometry)
-2. small-model candidate ranking and natural-language explanation
+## 系统定位
+项目面向仿真战场实时决策，采用轻量模型与规则约束融合架构：
+1. 先由硬约束保证战术安全与可执行性（射程、弹药、几何、风险）。
+2. 再由小模型对候选方案排序并生成解释。
 
-This keeps behavior stable while preserving adaptivity and interpretability.
+该架构兼顾稳定性、可解释性与边缘部署可行性。
 
-## Decision Pipeline
-1. **DIS Adapter** (`DisAdapter`)
-   - Ingests DIS-like entity and fire PDUs
-   - Builds a `BattlefieldSnapshot`
-   - Emits event records into memory stream
-2. **Situation Fusion** (`SituationFusion`)
-   - Converts raw state into tactical tags
-   - Example tags: `left_flank_exposed`, `enemy_armor_cluster_approaching`
-3. **Event Memory** (`EventMemory`)
-   - Maintains rolling event window
-   - Supports temporal context in decision prompts
-4. **Fire Control Engine** (`FireControlEngine`)
-   - Computes target threat index
-   - Selects shooter-target-weapon assignments
-   - Supports focus fire and stagger fire
-5. **Maneuver Engine** (`ManeuverEngine`)
-   - Threat-aware local path planning
-   - Tactical action selection and formation coordination
-6. **Model Runtime** (`ModelRuntime`)
-   - Ranks candidate summaries
-   - Generates decision explanation
-7. **Decision Cache** (`DecisionCache`)
-   - Reuses recent decisions for similar situations
+## 决策主链路
+1. **DIS 接入层**（`DisAdapter`）
+   - 处理实体状态与开火事件
+   - 构建 `BattlefieldSnapshot`
+   - 生成事件流写入记忆模块
+2. **态势融合层**（`SituationFusion`）
+   - 将原始态势转为战术语义标签
+   - 示例：`left_flank_exposed`、`enemy_armor_cluster_approaching`
+3. **事件记忆层**（`EventMemory`）
+   - 维护滚动事件窗口
+   - 支持时序检索与上下文拼接
+4. **火力决策引擎**（`FireControlEngine`）
+   - 计算目标威胁指数
+   - 进行武器与目标匹配
+   - 支持集火与梯次射击
+5. **机动决策引擎**（`ManeuverEngine`）
+   - 威胁感知路径规划
+   - 机动动作选择与编队协同
+6. **模型推理层**（`ModelRuntime`）
+   - 对候选方案进行排序
+   - 输出自然语言解释
+7. **决策缓存层**（`DecisionCache`）
+   - 对相似态势复用近期决策
 
-## Key Engineering Decisions
-- Model output never bypasses hard constraints.
-- Cache is keyed by coarse tactical features to reduce repeated compute.
-- Runtime backend is pluggable (`Mock` / OpenAI-compatible local service).
-- Path planning remains lightweight and deterministic for edge deployment.
+## 关键工程原则
+- 模型结果不能绕过硬约束。
+- 缓存使用粗粒度战术特征键，优先保障实时性。
+- 推理后端可插拔（`Mock` / OpenAI 兼容）。
+- 路径规划保持轻量与确定性，适配边缘设备。
 
-## Performance Objective
-- target: **P95 < 100 ms** end-to-end decision latency
-- optimization levers:
-  - INT8 inference mode flag
-  - bounded planning horizon
-  - short-lived decision cache
+## 性能目标
+- 端到端决策时延目标：**P95 < 100 ms**
+- 主要优化手段：
+  - INT8 推理模式开关
+  - 有界规划步数与范围
+  - 短 TTL 决策缓存

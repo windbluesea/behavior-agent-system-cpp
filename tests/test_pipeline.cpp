@@ -27,7 +27,7 @@ int main() {
 
   const auto snapshot = adapter.Poll();
   if (!snapshot.has_value()) {
-    std::cerr << "missing snapshot\n";
+    std::cerr << "缺少态势快照\n";
     return EXIT_FAILURE;
   }
 
@@ -39,13 +39,13 @@ int main() {
 
   const bas::DecisionPackage first = pipeline.Tick(*snapshot, adapter.DrainEvents());
   if (first.from_cache || first.fire.assignments.empty() || first.maneuver.actions.empty()) {
-    std::cerr << "first tick result invalid\n";
+    std::cerr << "首轮决策结果无效\n";
     return EXIT_FAILURE;
   }
 
   const bas::DecisionPackage second = pipeline.Tick(*snapshot, {});
   if (!second.from_cache) {
-    std::cerr << "expected cache hit on second tick\n";
+    std::cerr << "第二轮决策应命中缓存\n";
     return EXIT_FAILURE;
   }
 

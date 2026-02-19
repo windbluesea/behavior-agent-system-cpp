@@ -22,7 +22,7 @@ class ModelRunner:
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
         started = time.time()
-        LOGGER.info("Loading model from %s on %s", model_path, self.device)
+        LOGGER.info("正在加载模型：%s，设备：%s", model_path, self.device)
         self.tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
         dtype = torch.float16 if self.device == "cuda" else torch.float32
         self.model = AutoModelForCausalLM.from_pretrained(
@@ -35,7 +35,7 @@ class ModelRunner:
         if self.device != "cuda":
             self.model = self.model.to(self.device)
         self.model.eval()
-        LOGGER.info("Model loaded in %.1fs", time.time() - started)
+        LOGGER.info("模型加载完成，耗时 %.1f 秒", time.time() - started)
 
     def generate(self, messages: List[Dict[str, Any]], max_tokens: int, temperature: float) -> str:
         prompt_parts = []
@@ -91,18 +91,18 @@ class OpenAIHandler(BaseHTTPRequestHandler):
                 "data": [{"id": self.model_name, "object": "model", "owned_by": "local"}],
             })
             return
-        self._send_json({"error": "not found"}, status=404)
+        self._send_json({"error": "未找到接口"}, status=404)
 
     def do_POST(self) -> None:
         if self.path != "/v1/chat/completions":
-            self._send_json({"error": "not found"}, status=404)
+            self._send_json({"error": "未找到接口"}, status=404)
             return
 
         try:
             req = self._read_json()
             messages = req.get("messages", [])
             if not isinstance(messages, list) or not messages:
-                self._send_json({"error": "messages must be a non-empty list"}, status=400)
+                self._send_json({"error": "messages 字段必须为非空列表"}, status=400)
                 return
 
             max_tokens = int(req.get("max_tokens", self.runner.max_new_tokens))
@@ -130,13 +130,13 @@ class OpenAIHandler(BaseHTTPRequestHandler):
             }
             self._send_json(response)
         except Exception as exc:  # pylint: disable=broad-except
-            LOGGER.exception("Request failed")
+            LOGGER.exception("请求处理失败")
             self._send_json({"error": str(exc)}, status=500)
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="OpenAI-compatible server for local Qwen model")
-    parser.add_argument("--model-path", required=True, help="Path to local model directory")
+    parser = argparse.ArgumentParser(description="本地Qwen模型的OpenAI兼容服务")
+    parser.add_argument("--model-path", required=True, help="本地模型目录路径")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8000)
     parser.add_argument("--model-name", default="Qwen1.5-1.8B-Chat")
@@ -151,14 +151,14 @@ def main() -> None:
     logging.basicConfig(level=getattr(logging, args.log_level.upper(), logging.INFO))
 
     if not os.path.isdir(args.model_path):
-        raise SystemExit(f"Model path does not exist: {args.model_path}")
+        raise SystemExit(f"模型路径不存在: {args.model_path}")
 
     runner = ModelRunner(args.model_path, max_new_tokens=args.max_new_tokens, temperature=args.temperature)
     OpenAIHandler.runner = runner
     OpenAIHandler.model_name = args.model_name
 
     server = ThreadingHTTPServer((args.host, args.port), OpenAIHandler)
-    LOGGER.info("Server started at http://%s:%d", args.host, args.port)
+    LOGGER.info("服务已启动：http://%s:%d", args.host, args.port)
     server.serve_forever()
 
 

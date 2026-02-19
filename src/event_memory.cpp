@@ -46,8 +46,8 @@ std::string EventMemory::BuildContext(std::int64_t now_ms, std::int64_t window_m
   std::ostringstream oss;
   const auto recent = QueryRecent(now_ms, window_ms);
   for (const auto& ev : recent) {
-    oss << "[t=" << ev.timestamp_ms << "]"
-        << "[" << EventTypeToString(ev.type) << "] actor=" << ev.actor_id << " msg=" << ev.message << "\n";
+    oss << "[时间=" << ev.timestamp_ms << "]"
+        << "[" << EventTypeToString(ev.type) << "] 参与方=" << ev.actor_id << " 内容=" << ev.message << "\n";
   }
   return oss.str();
 }

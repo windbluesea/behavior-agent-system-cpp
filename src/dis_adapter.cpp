@@ -27,7 +27,7 @@ void DisAdapter::Ingest(const DisPduBatch& batch) {
     latest_timestamp_ms_ = std::max(latest_timestamp_ms_, fire.timestamp_ms);
     buffered_events_.push_back(
         {fire.timestamp_ms, EventType::WeaponFire, fire.shooter_id, fire.origin,
-         "weapon=" + fire.weapon_name + ",target=" + fire.target_id});
+         "武器=" + fire.weapon_name + "，目标=" + fire.target_id});
   }
 
   if (batch.env.has_value()) {
@@ -62,7 +62,7 @@ void DisAdapter::UpsertEntity(const DisEntityPdu& pdu) {
   state.threat_level = pdu.threat_level;
 
   if (state.weapons.empty()) {
-    // Default weapon sets allow the decision engine to run even without external config.
+    // 默认武器配置：即使未加载外部表，也能保障决策链路运行。
     switch (pdu.type) {
       case UnitType::Infantry:
         state.weapons.push_back({"rifle", 800.0, 0.25, 200, 0.0, {UnitType::Infantry}});

@@ -1,13 +1,13 @@
-# Testing Guide
+# 测试指南
 
-## Full Test Suite
+## 全量测试
 ```bash
 cmake -S . -B build -DBAS_BUILD_TESTS=ON
 cmake --build build -j
 ctest --test-dir build --output-on-failure
 ```
 
-## Run Single Tests
+## 单项测试
 ```bash
 ./build/test_memory
 ./build/test_fire_control
@@ -20,19 +20,19 @@ ctest --test-dir build --output-on-failure
 ./build/test_latency_smoke
 ```
 
-## Replay Smoke Check
+## 回放烟测
 ```bash
 ./build/bas_replay data/scenarios/demo_replay.bas
 ```
 
-## DIS Binary Parser Check
+## DIS 二进制解析烟测
 ```bash
 python3 scripts/generate_demo_dis_binary.py data/scenarios/demo_dis.bin
 ./build/bas_dis_parse data/scenarios/demo_dis.bin
 ./build/bas_replay data/scenarios/demo_dis.bin
 ```
 
-## Qwen Integration Check
+## Qwen 接入联调
 ```bash
 BAS_QWEN_STARTUP_TIMEOUT_S=900 BAS_QWEN_TIMEOUT_MS=180000 \
   scripts/run_qwen_demo.sh /home/sun/small/Qwen/Qwen1.5-1.8B-Chat

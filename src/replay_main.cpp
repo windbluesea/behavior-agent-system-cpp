@@ -36,7 +36,7 @@ bool IsBinaryReplay(const std::string& path) {
 
 int main(int argc, char** argv) {
   if (argc < 2) {
-    std::cerr << "Usage: bas_replay <replay_file>\n";
+    std::cerr << "用法: bas_replay <回放文件路径>\n";
     return EXIT_FAILURE;
   }
 
@@ -52,12 +52,12 @@ int main(int argc, char** argv) {
       batches = loader.LoadBatches(replay_file);
     }
   } catch (const std::exception& e) {
-    std::cerr << "Replay load failed: " << e.what() << "\n";
+    std::cerr << "回放加载失败: " << e.what() << "\n";
     return EXIT_FAILURE;
   }
 
   if (batches.empty()) {
-    std::cerr << "Replay has no frames\n";
+    std::cerr << "回放文件中没有有效帧\n";
     return EXIT_FAILURE;
   }
 
@@ -100,7 +100,7 @@ int main(int argc, char** argv) {
   }
 
   if (decisions == 0 || latencies_ms.empty()) {
-    std::cerr << "Replay produced no decisions\n";
+    std::cerr << "回放未产生有效决策\n";
     return EXIT_FAILURE;
   }
 
@@ -111,22 +111,22 @@ int main(int argc, char** argv) {
   const double p95_ms = latencies_ms[std::min(p95_index, latencies_ms.size() - 1)];
   const bas::ReplayMetricsResult metric_result = metrics.Finalize();
 
-  std::cout << "ReplayFile: " << replay_file << "\n";
-  std::cout << "ModelBackend: "
-            << (backend == bas::ModelBackend::OpenAICompatible ? "OpenAICompatible" : "Mock") << "\n";
-  std::cout << "Frames: " << batches.size() << "\n";
-  std::cout << "Ticks: " << ticks << "\n";
-  std::cout << "Decisions: " << decisions << "\n";
-  std::cout << "CacheHitRate: " << (100.0 * static_cast<double>(cache_hits) / static_cast<double>(decisions)) << "%\n";
-  std::cout << "AvgLatencyMs: " << avg_ms << "\n";
-  std::cout << "P95LatencyMs: " << p95_ms << "\n";
-  std::cout << "InitialFriendlyCount: " << metric_result.initial_friendly_count << "\n";
-  std::cout << "FinalFriendlyAlive: " << metric_result.final_friendly_alive << "\n";
-  std::cout << "SurvivalRate: " << metric_result.survival_rate << "%\n";
-  std::cout << "HostileLosses: " << metric_result.total_hostile_losses << "\n";
-  std::cout << "HitContributionRate: " << metric_result.hit_contribution_rate << "%\n";
+  std::cout << "回放文件: " << replay_file << "\n";
+  std::cout << "模型后端: " << (backend == bas::ModelBackend::OpenAICompatible ? "OpenAI兼容接口" : "模拟后端")
+            << "\n";
+  std::cout << "帧数: " << batches.size() << "\n";
+  std::cout << "决策循环次数: " << ticks << "\n";
+  std::cout << "决策总数: " << decisions << "\n";
+  std::cout << "缓存命中率: " << (100.0 * static_cast<double>(cache_hits) / static_cast<double>(decisions)) << "%\n";
+  std::cout << "平均时延(毫秒): " << avg_ms << "\n";
+  std::cout << "95分位时延(毫秒): " << p95_ms << "\n";
+  std::cout << "初始我方兵力: " << metric_result.initial_friendly_count << "\n";
+  std::cout << "最终存活我方兵力: " << metric_result.final_friendly_alive << "\n";
+  std::cout << "生存率: " << metric_result.survival_rate << "%\n";
+  std::cout << "敌方损失数: " << metric_result.total_hostile_losses << "\n";
+  std::cout << "命中贡献率: " << metric_result.hit_contribution_rate << "%\n";
   for (const auto& [shooter, credit] : metric_result.shooter_kill_contribution) {
-    std::cout << "ShooterKillCredit: " << shooter << "=" << credit << "\n";
+    std::cout << "射手毁伤贡献: " << shooter << "=" << credit << "\n";
   }
 
   return EXIT_SUCCESS;

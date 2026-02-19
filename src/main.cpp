@@ -27,26 +27,75 @@ bas::DisPduBatch BuildDemoPdus(std::int64_t now_ms) {
   return batch;
 }
 
+const char* TacticNameToChinese(const std::string& tactic) {
+  if (tactic == "focus_fire") {
+    return "集火射击";
+  }
+  if (tactic == "stagger_fire") {
+    return "梯次射击";
+  }
+  if (tactic == "single_shot") {
+    return "单发射击";
+  }
+  return tactic.c_str();
+}
+
+const char* WeaponNameToChinese(const std::string& weapon) {
+  if (weapon == "rifle") {
+    return "步枪";
+  }
+  if (weapon == "tank_gun") {
+    return "坦克炮";
+  }
+  if (weapon == "howitzer") {
+    return "榴弹炮";
+  }
+  if (weapon == "sam") {
+    return "防空导弹";
+  }
+  if (weapon == "generic") {
+    return "通用武器";
+  }
+  return weapon.c_str();
+}
+
+const char* ActionNameToChinese(const std::string& action) {
+  if (action == "emergency_evasion") {
+    return "紧急规避";
+  }
+  if (action == "flank_reinforce") {
+    return "侧翼增援";
+  }
+  if (action == "occupy_advantageous_terrain") {
+    return "占据有利地形";
+  }
+  if (action == "advance_bound") {
+    return "跃进前推";
+  }
+  return action.c_str();
+}
+
 void PrintDecision(const bas::DecisionPackage& pkg) {
-  std::cout << "Fire: " << pkg.fire.summary << "\n";
-  std::cout << "Maneuver: " << pkg.maneuver.summary << "\n";
-  std::cout << "Explain: " << pkg.explanation << "\n";
-  std::cout << "FromCache: " << (pkg.from_cache ? "true" : "false") << "\n";
+  std::cout << "火力决策: " << pkg.fire.summary << "\n";
+  std::cout << "机动决策: " << pkg.maneuver.summary << "\n";
+  std::cout << "决策解释: " << pkg.explanation << "\n";
+  std::cout << "是否命中缓存: " << (pkg.from_cache ? "是" : "否") << "\n";
 
   for (const auto& threat : pkg.fire.threats) {
-    std::cout << "  threat target=" << threat.target_id << " index=" << threat.index << " reason=" << threat.reason
+    std::cout << "  威胁目标=" << threat.target_id << " 指数=" << threat.index << " 原因=" << threat.reason
               << "\n";
   }
 
   for (const auto& assignment : pkg.fire.assignments) {
-    std::cout << "  fire shooter=" << assignment.shooter_id << " target=" << assignment.target_id
-              << " weapon=" << assignment.weapon_name << " tactic=" << assignment.tactic
-              << " offset_s=" << assignment.scheduled_offset_s << "\n";
+    std::cout << "  火力单元=" << assignment.shooter_id << " 目标=" << assignment.target_id
+              << " 武器=" << WeaponNameToChinese(assignment.weapon_name) << " 战术="
+              << TacticNameToChinese(assignment.tactic)
+              << " 延迟秒=" << assignment.scheduled_offset_s << "\n";
   }
 
   for (const auto& action : pkg.maneuver.actions) {
-    std::cout << "  move unit=" << action.unit_id << " action=" << action.action_name
-              << " next=(" << action.next_pose.x << "," << action.next_pose.y << ")\n";
+    std::cout << "  机动单元=" << action.unit_id << " 动作=" << ActionNameToChinese(action.action_name)
+              << " 下一位置=(" << action.next_pose.x << "," << action.next_pose.y << ")\n";
   }
 }
 
@@ -62,7 +111,7 @@ int main() {
 
   const auto snapshot = adapter.Poll();
   if (!snapshot.has_value()) {
-    std::cerr << "No snapshot available\n";
+    std::cerr << "未获取到态势快照\n";
     return 1;
   }
 
@@ -79,12 +128,12 @@ int main() {
   bas::AgentPipeline pipeline({3000, 5 * 60 * 1000}, bas::FireControlEngine{}, bas::ManeuverEngine{}, model_runtime);
 
   const bas::DecisionPackage first = pipeline.Tick(*snapshot, adapter.DrainEvents());
-  std::cout << "ModelBackend: "
-            << (backend == bas::ModelBackend::OpenAICompatible ? "OpenAICompatible" : "Mock") << "\n";
+  std::cout << "模型后端: " << (backend == bas::ModelBackend::OpenAICompatible ? "OpenAI兼容接口" : "模拟后端")
+            << "\n";
   PrintDecision(first);
 
   const bas::DecisionPackage second = pipeline.Tick(*snapshot, {});
-  std::cout << "--- second tick ---\n";
+  std::cout << "--- 第二次决策循环 ---\n";
   PrintDecision(second);
 
   return 0;

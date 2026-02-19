@@ -13,7 +13,7 @@ ManeuverDecision ManeuverEngine::Decide(const BattlefieldSnapshot& snapshot,
                                         const SituationSemantics& semantics) const {
   ManeuverDecision out;
   if (snapshot.friendly_units.empty()) {
-    out.summary = "maneuver_actions=0";
+    out.summary = "机动动作数=0";
     return out;
   }
 
@@ -52,7 +52,7 @@ ManeuverDecision ManeuverEngine::Decide(const BattlefieldSnapshot& snapshot,
       action.action_name = "emergency_evasion";
       action.next_pose = MoveAway(unit.pose, nearest->pose, config_.path_step_m * 1.5);
       action.path = {unit.pose, action.next_pose};
-      action.rationale = "close threat requires immediate evasive displacement";
+      action.rationale = "近距威胁触发紧急规避";
       out.actions.push_back(action);
       continue;
     }
@@ -62,16 +62,16 @@ ManeuverDecision ManeuverEngine::Decide(const BattlefieldSnapshot& snapshot,
       goal.x -= 220.0;
       goal.y += 80.0;
       action.action_name = "flank_reinforce";
-      action.rationale = "left flank pressure, shift and cover";
+      action.rationale = "左翼受压，机动补位";
     } else if (HasTag(semantics, "enemy_armor_cluster_approaching")) {
       goal.y += 200.0;
       goal.x += 60.0;
       action.action_name = "occupy_advantageous_terrain";
-      action.rationale = "gain forward firing position against armor cluster";
+      action.rationale = "抢占有利地形压制装甲集群";
     } else {
       goal.y += 160.0;
       action.action_name = "advance_bound";
-      action.rationale = "bounded advance under manageable threat";
+      action.rationale = "威胁可控，实施跃进";
     }
 
     if (out.formation_mode == "disperse") {
@@ -88,7 +88,8 @@ ManeuverDecision ManeuverEngine::Decide(const BattlefieldSnapshot& snapshot,
     out.actions.push_back(action);
   }
 
-  out.summary = "maneuver_actions=" + std::to_string(out.actions.size()) + ",formation=" + out.formation_mode;
+  out.summary = "机动动作数=" + std::to_string(out.actions.size()) +
+                "，编队模式=" + (out.formation_mode == "disperse" ? "分散" : "集结");
   return out;
 }
 

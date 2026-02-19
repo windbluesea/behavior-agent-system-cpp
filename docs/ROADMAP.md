@@ -1,16 +1,16 @@
-# Roadmap
+# 路线图
 
-## Phase A (Completed)
-- C++ modular skeleton and build/test pipeline
-- DIS-like adapter, semantics, memory, fire, maneuver, model runtime, cache
-- deterministic tests and integration smoke path
+## 阶段 A（已完成）
+- C++ 模块化骨架与构建/测试流水线
+- 态势接入、语义融合、记忆、火力、机动、模型运行时、缓存
+- 单元测试与集成烟测路径
 
-## Phase B (In Progress)
-- replace DIS-like simplified batch with strict IEEE 1278 PDU parser (done for Entity/Fire PDUs)
-- richer terrain and obstacle model for route planning
-- calibrated weapon tables from external configs
+## 阶段 B（进行中）
+- 由简化批处理输入升级为严格 IEEE 1278 PDU 解析（Entity/Fire 已完成）
+- 引入更丰富的地形与障碍建模
+- 外部可配置武器参数表校准
 
-## Phase C (Planned)
-- integrate local INT8 runtime benchmark and latency dashboards
-- add scenario replay packs and decision quality scoring
-- online parameter tuning and confidence calibration
+## 阶段 C（规划中）
+- 本地 INT8 运行时基准与时延看板
+- 增加回放场景包与决策质量评分
+- 在线参数调优与置信度标定

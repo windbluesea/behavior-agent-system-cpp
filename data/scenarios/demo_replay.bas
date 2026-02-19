@@ -1,7 +1,7 @@
-# BAS replay format: ENV/ENTITY/FIRE records in CSV
-# ENV,timestamp_ms,visibility_m,weather_risk,terrain_risk
-# ENTITY,timestamp_ms,id,side,type,x,y,z,speed_mps,heading_deg,alive,threat_level
-# FIRE,timestamp_ms,shooter_id,target_id,weapon_name,x,y,z
+# BAS 回放格式：使用 CSV 记录 ENV/ENTITY/FIRE 三类数据
+# ENV,时间戳毫秒,可见距离米,天气风险,地形风险
+# ENTITY,时间戳毫秒,编号,阵营,类型,x,y,z,速度米每秒,航向角,是否存活,威胁等级
+# FIRE,时间戳毫秒,射手编号,目标编号,武器名称,x,y,z
 
 ENV,1000,900,0.2,0.3
 ENTITY,1000,F-1,friendly,armor,0,0,0,6,15,1,0.35
