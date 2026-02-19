@@ -143,6 +143,27 @@ inline UnitType UnitTypeFromString(const std::string& text) {
   return UnitType::Unknown;
 }
 
+inline Side SideFromString(const std::string& text) {
+  if (text == "friendly") {
+    return Side::Friendly;
+  }
+  if (text == "hostile") {
+    return Side::Hostile;
+  }
+  return Side::Neutral;
+}
+
+inline const char* SideToString(Side side) {
+  switch (side) {
+    case Side::Friendly:
+      return "friendly";
+    case Side::Hostile:
+      return "hostile";
+    default:
+      return "neutral";
+  }
+}
+
 inline const char* UnitTypeToString(UnitType type) {
   switch (type) {
     case UnitType::Infantry:
