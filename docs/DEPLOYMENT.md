@@ -12,6 +12,12 @@ ctest --test-dir build --output-on-failure
 ./build/bas_demo
 ```
 
+## 2.1) Run Scenario Replay (Mock Model)
+```bash
+./build/bas_replay data/scenarios/demo_replay.bas
+```
+Replay format reference: `docs/REPLAY_FORMAT.md`
+
 ## 3) Connect to Local Qwen (OpenAI-Compatible)
 Start local OpenAI-compatible model server:
 ```bash
