@@ -20,6 +20,7 @@ cmake -S . -B build -DBAS_BUILD_TESTS=ON
 cmake --build build -j
 ctest --test-dir build --output-on-failure
 ./build/bas_demo
+./build/bas_replay data/scenarios/demo_replay.bas
 ```
 
 ## Using Local Qwen1.5-1.8B-Chat
@@ -65,6 +66,7 @@ BAS_QWEN_STARTUP_TIMEOUT_S=900 scripts/run_qwen_demo.sh /home/sun/small/Qwen/Qwe
 - `include/bas/system/` integrated decision pipeline
 - `tests/` unit and integration tests
 - `docs/` architecture and deployment docs
+- `data/scenarios/` replay samples
 
 ## Validation Coverage
 Current tests include:
@@ -73,3 +75,8 @@ Current tests include:
 - maneuver emergency action selection
 - end-to-end pipeline and decision cache behavior
 - latency smoke test (P95 target under 100 ms with mock backend)
+- replay loader/pipeline smoke tests
+
+Additional docs:
+- replay file format: `docs/REPLAY_FORMAT.md`
+- test operations: `docs/TESTING.md`
