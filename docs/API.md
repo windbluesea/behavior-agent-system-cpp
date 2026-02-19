@@ -19,6 +19,11 @@
   - calls model ranker
   - writes/reads decision cache
 
+## Replay Support
+- `ScenarioReplayLoader::LoadBatches(path)`
+  - loads `.bas` replay records (`ENV`/`ENTITY`/`FIRE`)
+  - produces timestamp-grouped `DisPduBatch` frames
+
 ## Model Runtime Backends
 - `ModelBackend::Mock`
 - `ModelBackend::OpenAICompatible`
