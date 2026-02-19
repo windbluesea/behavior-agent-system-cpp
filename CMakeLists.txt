@@ -16,9 +16,11 @@ endif()
 
 add_library(bas_core
   src/agent_pipeline.cpp
+  src/dis_binary_parser.cpp
   src/dis_adapter.cpp
   src/situation_fusion.cpp
   src/event_memory.cpp
+  src/replay_metrics.cpp
   src/scenario_replay.cpp
   src/fire_control_engine.cpp
   src/maneuver_engine.cpp
@@ -35,6 +37,9 @@ target_link_libraries(bas_demo PRIVATE bas_core)
 
 add_executable(bas_replay src/replay_main.cpp)
 target_link_libraries(bas_replay PRIVATE bas_core)
+
+add_executable(bas_dis_parse src/dis_parse_main.cpp)
+target_link_libraries(bas_dis_parse PRIVATE bas_core)
 
 if(BAS_BUILD_TESTS)
   enable_testing()
@@ -62,6 +67,14 @@ if(BAS_BUILD_TESTS)
   add_executable(test_replay_pipeline tests/test_replay_pipeline.cpp)
   target_link_libraries(test_replay_pipeline PRIVATE bas_core)
   add_test(NAME test_replay_pipeline COMMAND test_replay_pipeline)
+
+  add_executable(test_dis_binary_parser tests/test_dis_binary_parser.cpp)
+  target_link_libraries(test_dis_binary_parser PRIVATE bas_core)
+  add_test(NAME test_dis_binary_parser COMMAND test_dis_binary_parser)
+
+  add_executable(test_replay_metrics tests/test_replay_metrics.cpp)
+  target_link_libraries(test_replay_metrics PRIVATE bas_core)
+  add_test(NAME test_replay_metrics COMMAND test_replay_metrics)
 
   add_executable(test_latency_smoke tests/test_latency_smoke.cpp)
   target_link_libraries(test_latency_smoke PRIVATE bas_core)

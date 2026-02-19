@@ -6,9 +6,11 @@
 #include <string>
 #include <vector>
 
+#include "bas/dis/dis_binary_parser.hpp"
 #include "bas/dis/dis_adapter.hpp"
 #include "bas/inference/model_runtime.hpp"
 #include "bas/system/agent_pipeline.hpp"
+#include "bas/system/replay_metrics.hpp"
 #include "bas/system/scenario_replay.hpp"
 
 namespace {
@@ -21,6 +23,15 @@ bas::ModelBackend ResolveBackend() {
   return bas::ModelBackend::Mock;
 }
 
+bool IsBinaryReplay(const std::string& path) {
+  const auto pos = path.find_last_of('.');
+  if (pos == std::string::npos) {
+    return false;
+  }
+  const std::string ext = path.substr(pos + 1);
+  return ext == "bin" || ext == "dis" || ext == "disbin";
+}
+
 }  // namespace
 
 int main(int argc, char** argv) {
@@ -31,10 +42,15 @@ int main(int argc, char** argv) {
 
   const std::string replay_file = argv[1];
 
-  bas::ScenarioReplayLoader loader;
   std::vector<bas::DisPduBatch> batches;
   try {
-    batches = loader.LoadBatches(replay_file);
+    if (IsBinaryReplay(replay_file)) {
+      bas::DisBinaryParser parser;
+      batches = parser.ParseFile(replay_file);
+    } else {
+      bas::ScenarioReplayLoader loader;
+      batches = loader.LoadBatches(replay_file);
+    }
   } catch (const std::exception& e) {
     std::cerr << "Replay load failed: " << e.what() << "\n";
     return EXIT_FAILURE;
@@ -53,6 +69,7 @@ int main(int argc, char** argv) {
 
   bas::AgentPipeline pipeline({3000, 5 * 60 * 1000}, bas::FireControlEngine{}, bas::ManeuverEngine{}, model_runtime);
   bas::DisAdapter adapter;
+  bas::ReplayMetricsEvaluator metrics;
 
   std::vector<double> latencies_ms;
   std::size_t ticks = 0;
@@ -66,9 +83,12 @@ int main(int argc, char** argv) {
       continue;
     }
 
+    metrics.ObserveSnapshot(*snapshot);
+
     const auto t0 = std::chrono::steady_clock::now();
     const bas::DecisionPackage decision = pipeline.Tick(*snapshot, adapter.DrainEvents());
     const auto t1 = std::chrono::steady_clock::now();
+    metrics.ObserveDecision(snapshot->timestamp_ms, decision);
 
     ++ticks;
     ++decisions;
@@ -89,6 +109,7 @@ int main(int argc, char** argv) {
                         static_cast<double>(latencies_ms.size());
   const std::size_t p95_index = static_cast<std::size_t>(latencies_ms.size() * 0.95);
   const double p95_ms = latencies_ms[std::min(p95_index, latencies_ms.size() - 1)];
+  const bas::ReplayMetricsResult metric_result = metrics.Finalize();
 
   std::cout << "ReplayFile: " << replay_file << "\n";
   std::cout << "ModelBackend: "
@@ -99,6 +120,14 @@ int main(int argc, char** argv) {
   std::cout << "CacheHitRate: " << (100.0 * static_cast<double>(cache_hits) / static_cast<double>(decisions)) << "%\n";
   std::cout << "AvgLatencyMs: " << avg_ms << "\n";
   std::cout << "P95LatencyMs: " << p95_ms << "\n";
+  std::cout << "InitialFriendlyCount: " << metric_result.initial_friendly_count << "\n";
+  std::cout << "FinalFriendlyAlive: " << metric_result.final_friendly_alive << "\n";
+  std::cout << "SurvivalRate: " << metric_result.survival_rate << "%\n";
+  std::cout << "HostileLosses: " << metric_result.total_hostile_losses << "\n";
+  std::cout << "HitContributionRate: " << metric_result.hit_contribution_rate << "%\n";
+  for (const auto& [shooter, credit] : metric_result.shooter_kill_contribution) {
+    std::cout << "ShooterKillCredit: " << shooter << "=" << credit << "\n";
+  }
 
   return EXIT_SUCCESS;
 }

@@ -18,6 +18,28 @@ ctest --test-dir build --output-on-failure
 ```
 Replay format reference: `docs/REPLAY_FORMAT.md`
 
+Replay output now includes:
+- `HitContributionRate`
+- `SurvivalRate`
+- per-shooter kill contribution
+
+## 2.2) Parse Strict DIS Binary
+Generate a demo binary file:
+```bash
+python3 scripts/generate_demo_dis_binary.py data/scenarios/demo_dis.bin
+```
+
+Parse binary summary:
+```bash
+./build/bas_dis_parse data/scenarios/demo_dis.bin
+```
+
+Run replay pipeline directly on binary file:
+```bash
+./build/bas_replay data/scenarios/demo_dis.bin
+```
+DIS parser reference: `docs/DIS_BINARY.md`
+
 ## 3) Connect to Local Qwen (OpenAI-Compatible)
 Start local OpenAI-compatible model server:
 ```bash

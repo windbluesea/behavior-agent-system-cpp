@@ -23,6 +23,18 @@
 - `ScenarioReplayLoader::LoadBatches(path)`
   - loads `.bas` replay records (`ENV`/`ENTITY`/`FIRE`)
   - produces timestamp-grouped `DisPduBatch` frames
+- `DisBinaryParser::ParseFile(path)`
+  - parses strict binary DIS PDUs (`Entity State` and `Fire`)
+  - produces timestamp-grouped `DisPduBatch` frames
+
+## Replay Metrics
+- `ReplayMetricsEvaluator`
+  - `ObserveSnapshot(snapshot)` for alive-state transitions
+  - `ObserveDecision(ts, decision)` for kill-credit history
+  - `Finalize()` returns:
+    - `survival_rate`
+    - `hit_contribution_rate`
+    - per-shooter kill contribution
 
 ## Model Runtime Backends
 - `ModelBackend::Mock`

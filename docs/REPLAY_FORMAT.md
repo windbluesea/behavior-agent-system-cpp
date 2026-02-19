@@ -19,3 +19,6 @@ The replay loader accepts `.bas` text files with comma-separated records.
 - lines starting with `#` are comments
 - records are grouped by `timestamp_ms` into replay frames
 - sample file: `data/scenarios/demo_replay.bas`
+- `alive` transitions (`1 -> 0`) are used to compute replay metrics:
+  - hostile loss attribution (hit contribution)
+  - friendly survival rate

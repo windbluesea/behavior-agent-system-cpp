@@ -6,7 +6,7 @@
 - deterministic tests and integration smoke path
 
 ## Phase B (In Progress)
-- replace DIS-like simplified batch with strict IEEE 1278 PDU parser
+- replace DIS-like simplified batch with strict IEEE 1278 PDU parser (done for Entity/Fire PDUs)
 - richer terrain and obstacle model for route planning
 - calibrated weapon tables from external configs
 

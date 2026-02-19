@@ -21,6 +21,7 @@ cmake --build build -j
 ctest --test-dir build --output-on-failure
 ./build/bas_demo
 ./build/bas_replay data/scenarios/demo_replay.bas
+./build/bas_dis_parse data/scenarios/demo_dis.bin
 ```
 
 ## Using Local Qwen1.5-1.8B-Chat
@@ -67,6 +68,7 @@ BAS_QWEN_STARTUP_TIMEOUT_S=900 scripts/run_qwen_demo.sh /home/sun/small/Qwen/Qwe
 - `tests/` unit and integration tests
 - `docs/` architecture and deployment docs
 - `data/scenarios/` replay samples
+- `scripts/` local model and replay utilities
 
 ## Validation Coverage
 Current tests include:
@@ -76,7 +78,10 @@ Current tests include:
 - end-to-end pipeline and decision cache behavior
 - latency smoke test (P95 target under 100 ms with mock backend)
 - replay loader/pipeline smoke tests
+- strict DIS binary parser tests
+- replay metrics (hit contribution/survival rate) tests
 
 Additional docs:
 - replay file format: `docs/REPLAY_FORMAT.md`
 - test operations: `docs/TESTING.md`
+- strict DIS binary parser: `docs/DIS_BINARY.md`

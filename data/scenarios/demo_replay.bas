@@ -18,6 +18,6 @@ ENTITY,2000,H-2,hostile,artillery,-180,170,0,3.5,200,1,0.82
 
 ENV,3000,780,0.25,0.4
 ENTITY,3000,F-1,friendly,armor,45,55,0,6,35,1,0.35
-ENTITY,3000,F-2,friendly,infantry,10,35,0,2,40,1,0.20
-ENTITY,3000,H-1,hostile,armor,270,250,0,9,230,1,0.95
+ENTITY,3000,F-2,friendly,infantry,10,35,0,2,40,0,0.20
+ENTITY,3000,H-1,hostile,armor,270,250,0,9,230,0,0.95
 ENTITY,3000,H-2,hostile,artillery,-200,180,0,3.5,205,1,0.82
